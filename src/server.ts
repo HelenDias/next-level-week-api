@@ -4,6 +4,8 @@ const app = express();
 
 app.listen('4000');
 
-app.get('/users', () => {
+app.get('/users', (request, response) => {
   console.log('Listagem de usuários');
+
+  response.send('Hello world');
 });
