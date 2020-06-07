@@ -28,6 +28,21 @@ class PointsController {
       id: ids[0],
     });
   }
+
+  async show(request: Request, response: Response) {
+    const { id } = request.params;
+
+    try {
+      const point = await knex('points').where('id', id).first();
+
+      return !! point
+        ? response.json(point)
+        : response.status(400).json({ message: 'Ponto de coleta não encontrado' });
+    } catch (e) {
+      console.log(e);
+      return response.status(400).json({ message: 'Erro ao buscar ponto de coleta' });
+    }
+  }
 };
 
 export default PointsController;
