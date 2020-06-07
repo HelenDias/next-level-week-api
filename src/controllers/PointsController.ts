@@ -48,6 +48,29 @@ class PointsController {
       return response.status(400).json({ message: 'Erro ao buscar ponto de coleta' });
     }
   }
+
+  async index(request: Request, response: Response) {
+    try {
+      console.log(request.query);
+      const { city, uf, items } = request.query;
+
+      const parsedItems = String(items)
+        .split(',')
+        .map(item => Number(item.trim()));
+
+      const points = await knex('points')
+        .join('point_items', 'points.id', '=', 'point_items.point_id')
+        .where('city', String(city))
+        .where('uf', String(uf))
+        .whereIn('point_items.item_id', parsedItems)
+        .distinct()
+        .select('points.*');
+
+      return response.json(points);
+    } catch (e) {
+      return response.status(400).json({ message: 'Erro ao buscar pontos filtrados' });
+    }
+  }
 };
 
 export default PointsController;
