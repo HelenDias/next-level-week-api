@@ -1,8 +1,11 @@
 import express from 'express';
+import cors from 'cors';
 
 const app = express();
 
 app.listen('4000');
+app.use(express.json());
+app.use(cors());
 
 const users = [
   'Helen',
@@ -11,9 +14,11 @@ const users = [
 ];
 
 app.get('/users', (request, response) => {
-  const search = String(request.query.search);
+  const search = request.query.search;
 
-  const filteredUsers = search ? users.filter(user => user.includes(search)) : users;
+  const filteredUsers = !!search
+    ? users.filter(user => user.includes(String(search)))
+    : users;
 
   return response.json(filteredUsers);
 });
@@ -25,9 +30,11 @@ app.get('/users/:id', (request, response) => {
 });
 
 app.post('/users', (request, response) => {
+  const data = request.body;
+
   const user = {
-    name: 'Helen',
-    email: 'helen@dev-next.com',
+    name: data.name,
+    email: data.email,
   };
 
   return response.json(user);
