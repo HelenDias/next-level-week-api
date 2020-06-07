@@ -1,8 +1,9 @@
 import express from 'express';
 import knex from './database/connection';
-import omit from 'lodash/omit';
+import PointsController from './controllers/PointsController';
 
 const routes = express.Router();
+const pointsController = new PointsController();
 
 routes.get('/items', async (request, response) => {
   const items = await knex('items').select('*');
@@ -13,25 +14,6 @@ routes.get('/items', async (request, response) => {
   })));
 });
 
-routes.post('/points', async (request, response) => {
-  const { items } = request.body;
-
-  const trx = await knex.transaction();
-
-  const ids = await trx('points').insert({
-    ...omit(request.body, 'items'),
-    image: 'image-fake',
-  });
-
-  const pointItems = items.map((item_id: number) => ({
-    item_id,
-    point_id: ids[0],
-    image: 'image-fake',
-  }));
-
-  await trx('point_items').insert(pointItems);
-
-  return response.json({ success: true });
-});
+routes.post('/points', pointsController.create);
 
 export default routes;
