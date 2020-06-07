@@ -35,8 +35,13 @@ class PointsController {
     try {
       const point = await knex('points').where('id', id).first();
 
+      const items = await knex('items')
+        .join('point_items', 'items.id', '=', 'point_items.item_id')
+        .where('point_items.point_id', id)
+        .select('items.title');
+
       return !! point
-        ? response.json(point)
+        ? response.json({ point, items })
         : response.status(400).json({ message: 'Ponto de coleta não encontrado' });
     } catch (e) {
       console.log(e);
