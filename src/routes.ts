@@ -16,7 +16,9 @@ routes.get('/items', async (request, response) => {
 routes.post('/points', async (request, response) => {
   const { items } = request.body;
 
-  const ids = await knex('points').insert({
+  const trx = await knex.transaction();
+
+  const ids = await trx('points').insert({
     ...omit(request.body, 'items'),
     image: 'image-fake',
   });
@@ -27,7 +29,7 @@ routes.post('/points', async (request, response) => {
     image: 'image-fake',
   }));
 
-  await knex('point_items').insert(pointItems);
+  await trx('point_items').insert(pointItems);
 
   return response.json({ success: true });
 });
