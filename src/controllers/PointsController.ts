@@ -53,7 +53,6 @@ class PointsController {
 
   async index(request: Request, response: Response) {
     try {
-      console.log(request.query);
       const { city, uf, items } = request.query;
 
       const parsedItems = String(items)
